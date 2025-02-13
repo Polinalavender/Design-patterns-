@@ -5,3 +5,8 @@ The developers are developing a Smart Home Automation System that manages smart 
 - Use the Facade Pattern to provide a simple interface for managing devices.
 - Dynamically create different types of smart devices using a Factory Method Pattern.
 - Notify users when a device's state changes using the Observer Pattern.
+
+
+Developer name	
+Polina Zueva - 4986377
+Ameli Masewge Fernando - 5078970  
