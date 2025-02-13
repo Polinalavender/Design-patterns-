@@ -7,6 +7,6 @@ The developers are developing a Smart Home Automation System that manages smart 
 - Notify users when a device's state changes using the Observer Pattern.
 
 
-Developer name	
-Polina Zueva - 4986377
-Ameli Masewge Fernando - 5078970  
+Developers: 	
+- Polina Zueva - 4986377
+- Ameli Masewge Fernando - 5078970  
