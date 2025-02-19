@@ -5,6 +5,7 @@ public class SmartLight extends SmartDevice {
 
     @Override
     public void changeState(String newState) {
-
+        this.status = newState.equalsIgnoreCase("ON") ? "ON" : "OFF";
+        notifyObservers();
     }
 }
