@@ -6,7 +6,7 @@ The developers are developing a **Smart Home Automation System** that manages sm
 
 - Use the **Facade Pattern** to provide a simple interface for managing devices.
 - Dynamically create different types of smart devices using a **Factory Method Pattern**.
-- Notify users when a device's state changes using the **Observer Pattern**.
+- Notify users when a device's state changes using the **user.Observer Pattern**.
 
 ------
 
@@ -19,7 +19,7 @@ The developers are developing a **Smart Home Automation System** that manages sm
   - `addDevice(String type, String name)`: Adds a new smart device using the factory.
   - `removeDevice(String name)`: Removes a device from the system.
   - `changeDeviceState(String name, String newState)`: Updates a device's state.
-  - `subscribeUser(String deviceName, User user)`: Adds a user as an observer.
+  - `subscribeUser(String deviceName, user.User user)`: Adds a user as an observer.
 - Internally, the controller should use a `List<SmartDevice>` to store devices.
 
 #### **2.  Factory Method Pattern (Smart Device Creation)**
@@ -31,12 +31,12 @@ The developers are developing a **Smart Home Automation System** that manages sm
   - `SmartCamera` (recording on/off)
 - Create a factory class `SmartDeviceFactory` with a method `createDevice(String type, String name)` that returns a corresponding `SmartDevice`.
 
-#### **3. Observer Pattern (Device State Notifications)**
+#### **3. user.Observer Pattern (Device State Notifications)**
 
-- Create an `Observer` interface with `update(String message)`.
-- Implement a `User` class that subscribes to smart devices and receives notifications.
+- Create an `user.Observer` interface with `update(String message)`.
+- Implement a `user.User` class that subscribes to smart devices and receives notifications.
 - Each `SmartDevice` should maintain a list of observers (users) and notify them when their status changes.
-- The `addObserver(User user)` and `removeObserver(User user)` methods should allow users to subscribe/unsubscribe.
+- The `addObserver(user.User user)` and `removeObserver(user.User user)` methods should allow users to subscribe/unsubscribe.
 
 
 
@@ -56,7 +56,7 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 | Add/remove devices                                           | `SmartDevice` stores a list of observers | Ability to group devices (e.g., "Living Room" group | A mobile interface for remote control. |
 | Change device status                                         | Video door bells                         | Users can filter notifications                      |                                        |
 | Checks if the device is active or disconnected               |                                          |                                                     |                                        |
-| `User` class implementing `Observer`, receiving notifications |                                          |                                                     |                                        |
+| `user.User` class implementing `user.Observer`, receiving notifications |                                          |                                                     |                                        |
 
 
 
