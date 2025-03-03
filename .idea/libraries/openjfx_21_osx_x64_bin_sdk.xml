@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="openjfx-21_osx-x64_bin-sdk">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/openjfx-21_osx-x64_bin-sdk.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

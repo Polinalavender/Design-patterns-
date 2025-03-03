@@ -1,15 +1,12 @@
-package factory;
-
-
-import device.*;
+package main.java.factory;
 
 public class SmartDeviceFactory {
-    public SmartDevice createDevice(String type, String name) {
+    public device.SmartDevice createDevice(String type, String name) {
         return switch (type.toLowerCase()) {
-            case "light" -> new SmartLight(name);
-            case "thermostat" -> new SmartThermostat(name);
-            case "camera" -> new SmartCamera(name);
-            case "doorbell" -> new SmartDoorbell(name);
+            case "light" -> new device.SmartLight(name);
+            case "thermostat" -> new device.SmartThermostat(name);
+            case "camera" -> new device.SmartCamera(name);
+            case "doorbell" -> new device.SmartDoorbell(name);
             default -> throw new IllegalArgumentException("Unknown device type: " + type);
         };
     }

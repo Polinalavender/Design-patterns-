@@ -1,2 +1,32 @@
-public class SmartHomeApp {
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+
+import java.io.IOException;
+import java.net.URL;
+
+
+public class SmartHomeApp extends Application {
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        URL fxmlLocation = getClass().getResource("/com/smarthome/view/SmartHomeUI.fxml");
+        if (fxmlLocation == null) {
+            throw new IOException("ERROR: SmartHomeUI.fxml not found!");
+        }
+
+        FXMLLoader loader = new FXMLLoader(fxmlLocation);
+        Scene scene = new Scene(loader.load());
+
+        URL iconPath = getClass().getResource("/icon.png");
+        if (iconPath != null) {
+            primaryStage.getIcons().add(new Image(iconPath.toString()));
+        }
+
+        primaryStage.setTitle("Smart Home Automation");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 }
+
