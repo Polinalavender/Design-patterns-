@@ -1,12 +1,11 @@
 import javafx.application.Application;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
-
+import java.util.Objects;
 
 public class SmartHomeApp extends Application {
     @Override

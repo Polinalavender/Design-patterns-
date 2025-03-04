@@ -1,14 +1,10 @@
-package main.java;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import java.util.List;
 import java.util.Map;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
 
 public class SmartHomeControllerUI {
-    private ComboBox<String> deviceTypeBox;
+    @FXML private ComboBox<String> deviceTypeBox;
     @FXML private TextField deviceNameField;
     @FXML private ComboBox<String> deviceListBox;
     @FXML private ComboBox<String> deviceStateBox;
