@@ -1,6 +1,6 @@
 package org.example.smarthomeapplication.viewmodel;
 
-import model.device.SmartDevice;
+import org.example.smarthomeapplication.model.device.SmartDevice;
 import org.example.smarthomeapplication.Factory.SmartDeviceFactory;
 
 import java.util.HashMap;

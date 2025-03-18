@@ -1,4 +1,4 @@
-package com.smarthome.view;
+package org.example.smarthomeapplication.view;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
