@@ -46,7 +46,7 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 
 **Class Diagram:**
 
-![Screenshot 2025-03-18 at 11.17.09](/Users/liafernando/Library/Application Support/typora-user-images/Screenshot 2025-03-18 at 11.17.09.png)
+https://github.com/Polinalavender/Design-patterns-/blob/main/Class%20Diagram%20design%20Patterns.asta
 
 
 **MOSCOW analysis:**
