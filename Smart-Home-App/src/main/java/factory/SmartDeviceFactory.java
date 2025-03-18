@@ -1,4 +1,5 @@
-package main.java.factory;
+package factory;
+import device.SmartDevice;
 
 public class SmartDeviceFactory {
     public device.SmartDevice createDevice(String type, String name) {
