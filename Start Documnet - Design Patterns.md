@@ -46,6 +46,9 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 
 **Class Diagram:**
 
+https://files.oaiusercontent.com/file-L7ERneAQybzCiFfKB9xfWo?se=2025-03-18T10%3A16%3A51Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D299%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3DScreenshot%25202025-03-18%2520at%252011.11.26.png&sig=fie0395dQYAAYm9HXmHlRWq3A0Q0br5s2qbsQYad1Ak%3D![image](https://github.com/user-attachments/assets/ae77a56d-dd86-4dee-91d3-86b7722fc4a6)
+
+
 
 
 **MOSCOW analysis:**
