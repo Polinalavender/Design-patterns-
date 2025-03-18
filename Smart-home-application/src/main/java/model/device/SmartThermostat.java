@@ -1,9 +1,11 @@
-package com.smarthome.model.device;
+package model.device;
 
-public class VideoDoorbell extends SmartDevice {
-    public VideoDoorbell(String name) {
+import device.SmartDevice;
+
+public class SmartThermostat extends SmartDevice {
+    public SmartThermostat(String name) {
         super(name);
-        this.status = "standby";
+        this.status = "20°C";
     }
 
     @Override
@@ -13,6 +15,6 @@ public class VideoDoorbell extends SmartDevice {
             return;
         }
         this.status = newState;
-        notifyObservers("Doorbell status: " + status);
+        notifyObservers("Temperature set to " + status);
     }
 }

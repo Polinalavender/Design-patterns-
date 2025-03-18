@@ -1,4 +1,6 @@
-package com.smarthome.model.device;
+package model.device;
+
+import device.SmartDevice;
 
 public class SmartCamera extends SmartDevice {
     public SmartCamera(String name) {
