@@ -1,7 +1,5 @@
 package model.device;
 
-import device.SmartDevice;
-
 public class SmartLight extends SmartDevice {
     public SmartLight(String name) {
         super(name);

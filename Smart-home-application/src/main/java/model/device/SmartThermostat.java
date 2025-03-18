@@ -1,7 +1,5 @@
 package model.device;
 
-import device.SmartDevice;
-
 public class SmartThermostat extends SmartDevice {
     public SmartThermostat(String name) {
         super(name);

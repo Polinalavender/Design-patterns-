@@ -1,10 +1,10 @@
-package com.smarthome.view;
+package org.example.smarthomeapplication.view;
 
-import com.smarthome.viewmodel.SmartHomeController;
-import com.smarthome.model.device.SmartDevice;
 import com.smarthome.util.UIHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import model.device.SmartDevice;
+import org.example.smarthomeapplication.viewmodel.SmartHomeController;
 
 import java.util.List;
 import java.util.Map;
@@ -126,7 +126,7 @@ public class SmartHomeControllerUI {
             updateStatus("🗑️ Cleared all devices.");
         }
     }
-    
+
     private void updateStatus(String message) {
         statusOutput.appendText(message + "\n");
     }

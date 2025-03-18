@@ -1,7 +1,5 @@
 package model.device;
 
-import device.SmartDevice;
-
 public class SmartCamera extends SmartDevice {
     public SmartCamera(String name) {
         super(name);

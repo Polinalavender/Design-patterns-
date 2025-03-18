@@ -1,7 +1,5 @@
 package model.device;
 
-import device.SmartDevice;
-
 public class VideoDoorbell extends SmartDevice {
     public VideoDoorbell(String name) {
         super(name);

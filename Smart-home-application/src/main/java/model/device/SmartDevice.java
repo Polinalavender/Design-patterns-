@@ -1,4 +1,4 @@
-package device;
+package model.device;
 
 import org.example.smarthomeapplication.user.Observer;
 
