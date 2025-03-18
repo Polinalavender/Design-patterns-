@@ -50,6 +50,7 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 
 
 
+
 **MOSCOW analysis:**
 
 | MUST have                                                    | SHOULD have                              | COULD have                                          | WON'T have                             |
