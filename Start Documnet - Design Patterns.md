@@ -12,7 +12,7 @@ The developers are developing a **Smart Home Automation System** that manages sm
 
 ### **Requirements**
 
-#### **1. Facade Pattern (SmartHomeController)**
+#### **1. Facade Pattern (SmartHomeControllerUI)**
 
 - **SmartHomeController** class that acts as a **facade** for managing all smart devices.
 - It should have methods like:
