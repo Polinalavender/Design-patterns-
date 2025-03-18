@@ -118,6 +118,15 @@ public class SmartHomeControllerUI {
         updateStatus("ℹ️ Device: " + name + "\n📊 Status: " + device.getStatus() + "\n🟢 Active: " + device.isActive());
     }
 
+    @FXML
+    private void clearAllDevices() {
+        if (UIHelper.showConfirmationAlert("Confirm", "Are you sure you want to remove all devices?")) {
+            controller.clearAllDevices();
+            deviceListBox.getItems().clear();
+            updateStatus("🗑️ Cleared all devices.");
+        }
+    }
+    
     private void updateStatus(String message) {
         statusOutput.appendText(message + "\n");
     }
