@@ -1,11 +1,20 @@
+package com.smarthome.model.device;
+
 public class SmartCamera extends SmartDevice {
-    public SmartCamera(String deviceName) {
-        super(deviceName);
+    public SmartCamera(String name) {
+        super(name);
+        this.status = "off";
     }
 
     @Override
     public void changeState(String newState) {
-        this.status = newState.equalsIgnoreCase("RECORDING") ? "RECORDING" : "IDLE";
-        notifyObservers();
+        if (!isActive) {
+            System.out.println("Device is disconnected");
+            return;
+        }
+        if (newState.equalsIgnoreCase("on") || newState.equalsIgnoreCase("off")) {
+            this.status = newState.toLowerCase();
+            notifyObservers("Camera recording is " + status);
+        }
     }
 }
