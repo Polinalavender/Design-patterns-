@@ -1,6 +1,7 @@
-package com.smarthome.model.device;
+package device;
 
-import com.smarthome.user.Observer;
+import org.example.smarthomeapplication.user.Observer;
+
 import java.util.ArrayList;
 import java.util.List;
 
