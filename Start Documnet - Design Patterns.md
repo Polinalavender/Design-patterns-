@@ -46,7 +46,8 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 
 **Class Diagram:**
 
-https://github.com/Polinalavender/Design-patterns-/blob/main/Class%20Diagram%20design%20Patterns.asta
+<img width="718" alt="class diagram" src="https://github.com/user-attachments/assets/16b5b7e9-d95c-4a13-bf93-d00ad2903cbc" />
+
 
 
 **MOSCOW analysis:**
