@@ -1,4 +1,4 @@
-package model.device;
+package org.example.smarthomeapplication.model.device;
 
 public class SmartLight extends SmartDevice {
     public SmartLight(String name) {

@@ -1,6 +1,6 @@
 package org.example.smarthomeapplication.Factory;
 
-import model.device.*;
+import org.example.smarthomeapplication.model.device.*;
 
 public class SmartDeviceFactory {
     public SmartDevice createDevice(String type, String name) {

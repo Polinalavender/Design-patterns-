@@ -3,7 +3,7 @@ package org.example.smarthomeapplication.view;
 import com.smarthome.util.UIHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import model.device.SmartDevice;
+import org.example.smarthomeapplication.model.device.SmartDevice;
 import org.example.smarthomeapplication.viewmodel.SmartHomeController;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package model.device;
+package org.example.smarthomeapplication.model.device;
 
 public class SmartThermostat extends SmartDevice {
     public SmartThermostat(String name) {
