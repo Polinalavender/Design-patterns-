@@ -12,7 +12,7 @@ import java.util.Objects;
 public class SmartHomeApp extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
-        URL fxmlLocation = getClass().getResource("/com/smarthome/view/SmartHomeUI.fxml");
+        URL fxmlLocation = getClass().getResource("/SmartHomeUI.fxml");
         if (fxmlLocation == null) {
             throw new IOException("ERROR: SmartHomeUI.fxml not found!");
         }

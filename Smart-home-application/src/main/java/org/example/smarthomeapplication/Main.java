@@ -1,7 +1,7 @@
-package com.smarthome;
+package org.example.smarthomeapplication;
 
-import com.smarthome.view.SmartHomeApp;
 import javafx.application.Application;
+import org.example.smarthomeapplication.view.SmartHomeApp;
 
 public class Main {
     public static void main(String[] args) {

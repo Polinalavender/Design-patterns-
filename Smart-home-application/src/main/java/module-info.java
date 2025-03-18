@@ -2,8 +2,6 @@ module org.example.smarthomeapplication {
     requires javafx.controls;
     requires javafx.fxml;
 
-    requires org.kordamp.bootstrapfx.core;
-
-    opens org.example.smarthomeapplication to javafx.fxml;
-    exports org.example.smarthomeapplication;
+    opens org.example.smarthomeapplication.view to javafx.fxml; // Allow JavaFX to reflectively access the controller
+    exports org.example.smarthomeapplication.view; // Allow public access if needed
 }
