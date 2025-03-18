@@ -12,7 +12,7 @@ The developers are developing a **Smart Home Automation System** that manages sm
 
 ### **Requirements**
 
-#### **1. Facade Pattern (SmartHomeController)**
+#### **1. Facade Pattern (SmartHomeControllerUI)**
 
 - **SmartHomeController** class that acts as a **facade** for managing all smart devices.
 - It should have methods like:
@@ -45,6 +45,9 @@ The developers are developing a **Smart Home Automation System** that manages sm
 The camera system follows a MVVM (Model-View-ViewModel) architecture
 
 **Class Diagram:**
+
+<img width="718" alt="class diagram" src="https://github.com/user-attachments/assets/16b5b7e9-d95c-4a13-bf93-d00ad2903cbc" />
+
 
 
 
