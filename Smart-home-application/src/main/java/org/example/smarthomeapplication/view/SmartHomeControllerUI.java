@@ -65,7 +65,7 @@ public class SmartHomeControllerUI implements Observer {
 
     private final Map<String, List<String>> deviceStates = Map.of(
             "Light", List.of("on", "off"),
-            "Thermostat", List.of("18°C", "20°C", "22°C", "25°C", "cooling", "heating"),
+            "Thermostat", List.of("current temperature", "cooling", "heating"),
             "Camera", List.of("on", "off", "recording", "night mode"),
             "Doorbell", List.of("standby", "ringing", "mute")
     );
