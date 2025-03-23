@@ -2,60 +2,52 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.smarthomeapplication.view.SmartHomeControllerUI">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.smarthomeapplication.view.SmartHomeControllerUI"
+      prefHeight="600.0" prefWidth="800.0" spacing="10.0">
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+    </padding>
 
-    <top>
-        <Label text="🏡 Smart Home Automation"
-               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #0078D7; -fx-padding: 15px;"
-               BorderPane.alignment="CENTER"/>
-    </top>
+    <HBox spacing="10.0">
+        <Label text="Device Type:" prefWidth="100.0"/>
+        <ComboBox fx:id="deviceTypeBox" prefWidth="150.0"/>
+        <Label text="Device Name:" prefWidth="100.0"/>
+        <TextField fx:id="deviceNameField" prefWidth="150.0"/>
+        <Button fx:id="addDeviceButton" text="Add Device"/>
+    </HBox>
 
-    <center>
-        <GridPane hgap="15" vgap="15">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
+    <HBox spacing="10.0">
+        <Label text="Select Device:" prefWidth="100.0"/>
+        <ComboBox fx:id="deviceListBox" prefWidth="150.0"/>
+        <Label text="Change State:" prefWidth="100.0"/>
+        <ComboBox fx:id="deviceStateBox" prefWidth="150.0"/>
+        <Button fx:id="changeStateButton" text="Apply State"/>
+    </HBox>
 
-            <columnConstraints>
-                <ColumnConstraints halignment="RIGHT" minWidth="150"/>
-                <ColumnConstraints halignment="LEFT" minWidth="250"/>
-            </columnConstraints>
+    <HBox spacing="10.0">
+        <Button fx:id="checkStatusButton" text="Check Status"/>
+        <Button fx:id="removeDeviceButton" text="Remove Device"/>
+        <Button fx:id="takePhotoButton" text="Take Photo" visible="false"/>
+        <Button fx:id="galleryButton" text="Photo Gallery" visible="false"/>
+    </HBox>
 
-            <Label text="Device Type:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <ComboBox fx:id="deviceTypeBox" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-
-            <Label text="Device Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <TextField fx:id="deviceNameField" promptText="Enter device name" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-
-            <Label text="Select Device:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <ComboBox fx:id="deviceListBox" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-
-            <Label text="New State:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <ComboBox fx:id="deviceStateBox" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-
-            <HBox spacing="15" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2" alignment="CENTER">
-                <Button text="➕ Add Device" fx:id="addDeviceButton"
-                        style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Button text="❌ Remove Device" fx:id="removeDeviceButton"
-                        style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Button text="🔄 Change State" fx:id="changeStateButton"
-                        style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Button text="ℹ️ Check Status" fx:id="checkStatusButton"
-                        style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Button fx:id="galleryButton" text="Gallery" />
+    <!-- Light control section -->
+    <TitledPane text="Light Controls" collapsible="true">
+        <VBox spacing="10">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Brightness:" prefWidth="100.0"/>
+                <Slider fx:id="brightnessSlider" prefWidth="200.0" visible="false"/>
+                <Label text="Color:" prefWidth="50.0"/>
+                <ComboBox fx:id="colorSelector" prefWidth="100.0" visible="false"/>
+                <Button fx:id="applyLightSettingsButton" text="Apply Light Settings" visible="false"/>
             </HBox>
-        </GridPane>
-    </center>
-    <bottom>
-        <TextArea fx:id="statusOutput"
-                  editable="false"
-                  prefHeight="120"
-                  wrapText="true"
-                  style="-fx-font-size: 14px; -fx-padding: 10px;"
-                  BorderPane.alignment="CENTER"/>
-    </bottom>
+            <StackPane fx:id="lightPreviewPane" prefHeight="180.0" prefWidth="180.0" visible="false"/>
+        </VBox>
+    </TitledPane>
 
-</BorderPane>
+    <Label text="Status:"/>
+    <TextArea fx:id="statusOutput" VBox.vgrow="ALWAYS"/>
+</VBox>

@@ -10,13 +10,20 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Region;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.util.Duration;
 import javafx.animation.PauseTransition;
+import javafx.scene.paint.Color;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.Glow;
 
 import org.example.smarthomeapplication.model.device.SmartDevice;
 import org.example.smarthomeapplication.model.device.SmartCamera;
+import org.example.smarthomeapplication.model.device.SmartLight;
 import org.example.smarthomeapplication.viewmodel.SmartHomeController;
 import org.example.smarthomeapplication.user.User;
 import org.example.smarthomeapplication.user.Observer;
@@ -42,16 +49,28 @@ public class SmartHomeControllerUI implements Observer {
     @FXML private Button takePhotoButton;
     @FXML private Button galleryButton;
 
+    // New UI controls for light
+    @FXML private Slider brightnessSlider;
+    @FXML private ComboBox<String> colorSelector;
+    @FXML private Button applyLightSettingsButton;
+    @FXML private StackPane lightPreviewPane;
+
+    private Region lightPreviewRegion;
+    private ColorAdjust colorEffect = new ColorAdjust();
+    private Glow glowEffect = new Glow();
+
     private final SmartHomeController controller = new SmartHomeController();
     private final User currentUser = new User("Default User");
     private String lastPhotoTaken = null;
 
     private final Map<String, List<String>> deviceStates = Map.of(
-            "Light", List.of("on", "off", "dimmed", "color mode"),
+            "Light", List.of("on", "off"),
             "Thermostat", List.of("18°C", "20°C", "22°C", "25°C", "cooling", "heating"),
             "Camera", List.of("on", "off", "recording", "night mode"),
             "Doorbell", List.of("standby", "ringing", "mute")
     );
+
+    private final List<String> lightColors = List.of("white", "red", "blue", "pink", "green", "yellow", "purple", "orange");
 
     @FXML
     private void initialize() {
@@ -71,6 +90,198 @@ public class SmartHomeControllerUI implements Observer {
         if (galleryButton != null) {
             galleryButton.setOnAction(event -> openGallery());
         }
+
+        // Initialize smart light controls if they exist in the FXML
+        if (brightnessSlider != null) {
+            brightnessSlider.setMin(0);
+            brightnessSlider.setMax(100);
+            brightnessSlider.setValue(100);
+            brightnessSlider.valueProperty().addListener((obs, oldVal, newVal) ->
+                    updateLightPreview());
+        }
+
+        if (colorSelector != null) {
+            colorSelector.getItems().addAll(lightColors);
+            colorSelector.setValue("white");
+            colorSelector.setOnAction(event -> updateLightPreview());
+        }
+
+        if (applyLightSettingsButton != null) {
+            applyLightSettingsButton.setOnAction(event -> applyLightSettings());
+        }
+
+        if (lightPreviewPane != null) {
+            lightPreviewRegion = new Region();
+            lightPreviewRegion.setMinSize(150, 150);
+            lightPreviewRegion.setPrefSize(150, 150);
+            lightPreviewRegion.setMaxSize(150, 150);
+            lightPreviewRegion.setStyle("-fx-background-color: white; -fx-background-radius: 75;");
+
+            // Set up the initial effects
+            glowEffect.setLevel(0.5);
+            lightPreviewRegion.setEffect(glowEffect);
+
+            lightPreviewPane.getChildren().add(lightPreviewRegion);
+            lightPreviewPane.setAlignment(Pos.CENTER);
+
+            updateLightPreview();
+        }
+
+        // Set listener for device selection to update controls
+        deviceListBox.setOnAction(event -> updateDeviceSpecificControls());
+    }
+
+    private void updateDeviceSpecificControls() {
+        String deviceName = deviceListBox.getValue();
+        if (deviceName == null) return;
+
+        SmartDevice device = controller.getDevice(deviceName);
+        if (device == null) return;
+
+        boolean isLightDevice = device instanceof SmartLight;
+
+        // Show/hide light-specific controls
+        if (brightnessSlider != null) brightnessSlider.setVisible(isLightDevice);
+        if (colorSelector != null) colorSelector.setVisible(isLightDevice);
+        if (applyLightSettingsButton != null) applyLightSettingsButton.setVisible(isLightDevice);
+        if (lightPreviewPane != null) lightPreviewPane.setVisible(isLightDevice);
+
+        // Show/hide camera-specific controls
+        boolean isCameraDevice = device instanceof SmartCamera;
+        if (takePhotoButton != null) takePhotoButton.setVisible(isCameraDevice);
+        if (galleryButton != null) galleryButton.setVisible(isCameraDevice);
+
+        // Update light control values if it's a light
+        if (isLightDevice && device instanceof SmartLight light) {
+            if (brightnessSlider != null) brightnessSlider.setValue(light.getBrightness());
+            if (colorSelector != null) {
+                String currentColor = light.getColor();
+                if (lightColors.contains(currentColor)) {
+                    colorSelector.setValue(currentColor);
+                }
+            }
+            updateLightPreview();
+        }
+    }
+
+    private void updateLightPreview() {
+        if (lightPreviewRegion == null) return;
+
+        double brightness = 0.0;
+        if (brightnessSlider != null) {
+            brightness = brightnessSlider.getValue() / 100.0;
+        }
+
+        String color = "white";
+        if (colorSelector != null) {
+            color = colorSelector.getValue();
+        }
+
+        // Apply color
+        Color jfxColor;
+        switch (color) {
+            case "red" -> jfxColor = Color.RED;
+            case "blue" -> jfxColor = Color.BLUE;
+            case "pink" -> jfxColor = Color.PINK;
+            case "green" -> jfxColor = Color.GREEN;
+            case "yellow" -> jfxColor = Color.YELLOW;
+            case "purple" -> jfxColor = Color.PURPLE;
+            case "orange" -> jfxColor = Color.ORANGE;
+            default -> jfxColor = Color.WHITE;
+        }
+
+        // Convert to RGB hex code for CSS
+        String colorHex = String.format("#%02X%02X%02X",
+                (int)(jfxColor.getRed() * 255),
+                (int)(jfxColor.getGreen() * 255),
+                (int)(jfxColor.getBlue() * 255));
+
+        // Apply brightness
+        glowEffect.setLevel(brightness * 0.8);
+
+        // Update the light preview style
+        lightPreviewRegion.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 75;");
+
+        // Simulate dimming - make entire view darker when brightness is lower
+        String deviceName = deviceListBox.getValue();
+        if (deviceName != null) {
+            SmartDevice device = controller.getDevice(deviceName);
+            if (device instanceof SmartLight light && light.getStatus().equals("on")) {
+                applyLightEffectToScreen(jfxColor, brightness);
+            }
+        }
+    }
+
+    private void applyLightEffectToScreen(Color color, double brightness) {
+        // Create a global screen effect to simulate the light's effect on the screen
+        // This is simulated here - in a real app this would affect the entire application
+
+        // For a real implementation, you might use JavaFX effects on the main scene
+        // or use platform-specific APIs to adjust the screen brightness and color
+
+        if (lightPreviewPane != null && lightPreviewPane.getScene() != null) {
+            ColorAdjust colorAdjust = new ColorAdjust();
+
+            // Adjust hue to simulate color
+            if (color == Color.RED) {
+                colorAdjust.setHue(0.8);
+            } else if (color == Color.BLUE) {
+                colorAdjust.setHue(-0.7);
+            } else if (color == Color.GREEN) {
+                colorAdjust.setHue(0.4);
+            } else if (color == Color.YELLOW) {
+                colorAdjust.setHue(0.2);
+            } else if (color == Color.PINK) {
+                colorAdjust.setHue(0.9);
+            } else if (color == Color.PURPLE) {
+                colorAdjust.setHue(-0.4);
+            } else if (color == Color.ORANGE) {
+                colorAdjust.setHue(0.1);
+            }
+
+            // Apply brightness
+            colorAdjust.setBrightness(brightness - 0.5);
+
+            // Note: This applies to the light preview pane only for demonstration
+            // In a real implementation, this would affect the entire UI
+            lightPreviewPane.setEffect(colorAdjust);
+        }
+    }
+
+    private void applyLightSettings() {
+        String deviceName = deviceListBox.getValue();
+        if (deviceName == null) {
+            UIHelper.showErrorAlert("Selection Error", "Please select a light device.");
+            return;
+        }
+
+        SmartDevice device = controller.getDevice(deviceName);
+        if (!(device instanceof SmartLight)) {
+            UIHelper.showErrorAlert("Device Type Error", "Selected device is not a light.");
+            return;
+        }
+
+        // Apply brightness
+        if (brightnessSlider != null) {
+            int brightness = (int) brightnessSlider.getValue();
+            controller.changeDeviceState(deviceName, "brightness:" + brightness);
+        }
+
+        // Apply color
+        if (colorSelector != null) {
+            String color = colorSelector.getValue();
+            controller.changeDeviceState(deviceName, "color:" + color);
+        }
+
+        // Make sure light is on to see effects
+        String currentStatus = device.getStatus().toLowerCase();
+        if (!currentStatus.startsWith("on")) {
+            controller.changeDeviceState(deviceName, "on");
+        }
+
+        updateStatus("💡 Applied light settings: Brightness: " +
+                (int)brightnessSlider.getValue() + "%, Color: " +
+                colorSelector.getValue());
     }
 
     @Override
@@ -91,6 +302,14 @@ public class SmartHomeControllerUI implements Observer {
             // Show a notification popup on the JavaFX thread
             javafx.application.Platform.runLater(() -> {
                 showPhotoNotification();
+            });
+        }
+
+        // If the notification is about a light change, update the preview
+        if (message.contains("Light is") || message.contains("Brightness changed") ||
+                message.contains("Color changed")) {
+            javafx.application.Platform.runLater(() -> {
+                updateDeviceSpecificControls();
             });
         }
     }
@@ -118,7 +337,6 @@ public class SmartHomeControllerUI implements Observer {
         // Layout
         HBox buttonBox = new HBox(10, viewButton, closeButton);
         buttonBox.setAlignment(Pos.CENTER);
-
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(15));
         layout.getChildren().addAll(
@@ -143,7 +361,7 @@ public class SmartHomeControllerUI implements Observer {
         notificationStage.show();
     }
 
-    @FXML
+        @FXML
     private void removeDevice() {
         String name = deviceListBox.getValue();
         if (name == null) {
@@ -166,6 +384,7 @@ public class SmartHomeControllerUI implements Observer {
             deviceStateBox.getItems().addAll(deviceStates.get(selectedType));
         }
     }
+
 
     @FXML
     private void addDevice() {
@@ -190,6 +409,9 @@ public class SmartHomeControllerUI implements Observer {
         // Add both the current user and this UI controller as observers of the device
         device.addObserver(currentUser);
         device.addObserver(this); // Adding this UI controller as an observer
+
+        // Update device-specific controls
+        updateDeviceSpecificControls();
     }
 
     @FXML
@@ -204,7 +426,11 @@ public class SmartHomeControllerUI implements Observer {
 
         controller.changeDeviceState(name, state);
         updateStatus("🔄 Changed " + name + " state to: " + state);
+
+        // Update device-specific controls after state change
+        updateDeviceSpecificControls();
     }
+
 
     @FXML
     private void checkStatus() {
@@ -225,6 +451,12 @@ public class SmartHomeControllerUI implements Observer {
             String[] photos = camera.getPhotosList();
             updateStatus("🖼️ Photos taken: " + photos.length);
         }
+
+        // Additional info for lights
+        if (device instanceof SmartLight light) {
+            updateStatus("💡 Brightness: " + light.getBrightness() + "%" +
+                    "\n🎨 Color: " + light.getColor());
+        }
     }
 
     @FXML
@@ -241,28 +473,10 @@ public class SmartHomeControllerUI implements Observer {
             return;
         }
 
-        // Try to take the photo
         if (camera.takePhoto()) {
             updateStatus("📸 Photo taken with " + name);
-
-            // Show visual feedback on the button
-            String originalText = takePhotoButton.getText();
-            takePhotoButton.setDisable(true);
-            takePhotoButton.setText("Processing...");
-
-            // Reset button after a short delay
-            PauseTransition delay = new PauseTransition(Duration.seconds(1));
-            delay.setOnFinished(e -> {
-                takePhotoButton.setText(originalText);
-                takePhotoButton.setDisable(false);
-
-                // Show visual notification confirming photo is taken
-                // Note: The Observer pattern will also trigger the notification popup
-            });
-            delay.play();
         } else {
-            UIHelper.showErrorAlert("Camera Error",
-                    "Failed to take photo. Make sure camera is in recording mode (on or night mode).");
+            updateStatus("❌ Failed to take photo. Make sure camera is in recording mode.");
         }
     }
 
@@ -300,7 +514,6 @@ public class SmartHomeControllerUI implements Observer {
         int col = 0;
         int row = 0;
         final int MAX_COLS = 3;
-        String highlightedPhoto = lastPhotoTaken;
 
         try {
             for (String photoName : photos) {
@@ -312,18 +525,11 @@ public class SmartHomeControllerUI implements Observer {
                     Image image = new Image(new FileInputStream(photoFile), 200, 150, true, true);
                     ImageView imageView = new ImageView(image);
 
-                    // Add styling and highlight the last taken photo
-                    if (photoName.equals(highlightedPhoto)) {
-                        imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,255,0,0.8), 15, 0, 0, 0);");
-                    } else {
-                        imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
-                    }
+                    // Add some styling
+                    imageView.setStyle("-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
 
                     // Create a label with the photo name
                     Label photoLabel = new Label(photoName);
-                    if (photoName.equals(highlightedPhoto)) {
-                        photoLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
-                    }
 
                     // Create a container for the image and label
                     VBox photoBox = new VBox(10, imageView, photoLabel);
@@ -385,19 +591,12 @@ public class SmartHomeControllerUI implements Observer {
             }
         });
 
-        // Create take new photo button
-        Button takeNewPhotoButton = new Button("Take New Photo");
-        takeNewPhotoButton.setOnAction(event -> {
-            galleryStage.close();
-            takePhoto();
-        });
-
         // Create close button
         Button closeButton = new Button("Close Gallery");
         closeButton.setOnAction(event -> galleryStage.close());
 
         // Create button container
-        HBox buttonBox = new HBox(10, takeNewPhotoButton, deleteAllButton, closeButton);
+        HBox buttonBox = new HBox(10, deleteAllButton, closeButton);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10));
 
@@ -408,13 +607,6 @@ public class SmartHomeControllerUI implements Observer {
         Scene galleryScene = new Scene(mainLayout, 700, 500);
         galleryStage.setScene(galleryScene);
         galleryStage.show();
-
-        // If there's a highlighted photo, scroll to it
-        if (highlightedPhoto != null) {
-            // Find the highlighted photo and scroll to it
-            // This is a simple approach that works in many cases
-            scrollPane.setVvalue(0.5);
-        }
     }
 
     @FXML
