@@ -52,9 +52,6 @@ public class SmartHomeControllerUI implements Observer {
     @FXML private Button applyLightSettingsButton;
     @FXML private StackPane lightPreviewPane;
 
-    // voice assistant
-    @FXML private Button voiceAssistantControlButton;
-
     private Region lightPreviewRegion;
     private ColorAdjust colorEffect = new ColorAdjust();
     private Glow glowEffect = new Glow();
@@ -136,11 +133,6 @@ public class SmartHomeControllerUI implements Observer {
 
         // Set listener for device selection to update controls
         deviceListBox.setOnAction(event -> updateDeviceSpecificControls());
-
-        if (voiceAssistantControlButton != null) {
-            voiceAssistantControlButton.setOnAction(event -> openVoiceAssistantPanel());
-            voiceAssistantControlButton.setVisible(false);
-        }
     }
 
     private void updateDeviceSpecificControls() {
@@ -178,27 +170,8 @@ public class SmartHomeControllerUI implements Observer {
             }
             updateLightPreview();
         }
-
-        boolean isVoiceAssistant = device instanceof SmartVoiceAssistant;
-        if (voiceAssistantControlButton != null) voiceAssistantControlButton.setVisible(isVoiceAssistant);
     }
 
-    public void openVoiceAssistantPanel() {
-        String deviceName = deviceListBox.getValue();
-        if (deviceName == null) {
-            UIHelper.showErrorAlert("Selection Error", "Please select a voice assistant device.");
-            return;
-        }
-
-        SmartDevice device = controller.getDevice(deviceName);
-        if (!(device instanceof SmartVoiceAssistant)) {
-            UIHelper.showErrorAlert("Device Type Error", "Selected device is not a voice assistant.");
-            return;
-        }
-
-        org.example.smarthomeapplication.view.VoiceAssistantPanel panel = new org.example.smarthomeapplication.view.VoiceAssistantPanel(controller);
-        panel.showVoiceAssistantPanel(deviceName);
-    }
 
     private void updateLightPreview() {
         if (lightPreviewRegion == null) return;
