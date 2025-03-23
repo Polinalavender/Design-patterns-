@@ -18,12 +18,9 @@ import javafx.util.Duration;
 import javafx.animation.PauseTransition;
 import javafx.scene.paint.Color;
 import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.Bloom;
 import javafx.scene.effect.Glow;
 
-import org.example.smarthomeapplication.model.device.SmartDevice;
-import org.example.smarthomeapplication.model.device.SmartCamera;
-import org.example.smarthomeapplication.model.device.SmartLight;
+import org.example.smarthomeapplication.model.device.*;
 import org.example.smarthomeapplication.viewmodel.SmartHomeController;
 import org.example.smarthomeapplication.user.User;
 import org.example.smarthomeapplication.user.Observer;
@@ -71,6 +68,8 @@ public class SmartHomeControllerUI implements Observer {
     );
 
     private final List<String> lightColors = List.of("white", "red", "blue", "pink", "green", "yellow", "purple", "orange");
+
+    @FXML private Button thermostatControlButton;
 
     @FXML
     private void initialize() {
@@ -125,6 +124,11 @@ public class SmartHomeControllerUI implements Observer {
             lightPreviewPane.setAlignment(Pos.CENTER);
 
             updateLightPreview();
+
+            if (thermostatControlButton != null) {
+                thermostatControlButton.setOnAction(event -> openThermostatPanel());
+                thermostatControlButton.setVisible(false);
+            }
         }
 
         // Set listener for device selection to update controls
@@ -135,7 +139,11 @@ public class SmartHomeControllerUI implements Observer {
         String deviceName = deviceListBox.getValue();
         if (deviceName == null) return;
 
-        SmartDevice device = controller.getDevice(deviceName);
+        SmartDevice device = null;
+        boolean isThermostatDevice = device instanceof SmartThermostat;
+        if (thermostatControlButton != null) thermostatControlButton.setVisible(isThermostatDevice);
+
+        device = controller.getDevice(deviceName);
         if (device == null) return;
 
         boolean isLightDevice = device instanceof SmartLight;
@@ -163,6 +171,7 @@ public class SmartHomeControllerUI implements Observer {
             updateLightPreview();
         }
     }
+
 
     private void updateLightPreview() {
         if (lightPreviewRegion == null) return;
@@ -616,6 +625,23 @@ public class SmartHomeControllerUI implements Observer {
             deviceListBox.getItems().clear();
             updateStatus("🗑️ Cleared all devices.");
         }
+    }
+
+    public void openThermostatPanel() {
+        String deviceName = deviceListBox.getValue();
+        if (deviceName == null) {
+            UIHelper.showErrorAlert("Selection Error", "Please select a thermostat device.");
+            return;
+        }
+
+        SmartDevice device = controller.getDevice(deviceName);
+        if (!(device instanceof SmartThermostat)) {
+            UIHelper.showErrorAlert("Device Type Error", "Selected device is not a thermostat.");
+            return;
+        }
+
+        ThermostatControlPanel panel = new ThermostatControlPanel(controller);
+        panel.showThermostatControlPanel(deviceName);
     }
 
     private void updateStatus(String message) {
