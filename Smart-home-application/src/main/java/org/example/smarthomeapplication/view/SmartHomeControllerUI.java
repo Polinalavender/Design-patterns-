@@ -27,13 +27,7 @@ public class SmartHomeControllerUI {
             "Light", List.of("on", "off", "dimmed", "color mode"),
             "Thermostat", List.of("18°C", "20°C", "22°C", "25°C", "cooling", "heating"),
             "Camera", List.of("on", "off", "recording", "night mode"),
-            "Doorbell", List.of("standby", "ringing", "mute"),
-            "Smart Lock", List.of("locked", "unlocked", "auto-lock"),
-            "Speaker", List.of("playing", "paused", "muted", "volume up", "volume down"),
-            "Fan", List.of("off", "low", "medium", "high", "auto"),
-            "Garage Door", List.of("open", "closed", "half-open"),
-            "Sprinkler", List.of("on", "off", "scheduled"),
-            "Blinds", List.of("open", "closed", "half-open")
+            "Doorbell", List.of("standby", "ringing", "mute")
     );
 
     @FXML

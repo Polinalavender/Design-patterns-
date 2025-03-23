@@ -30,4 +30,3 @@ public class SmartHomeApp extends Application {
         primaryStage.show();
     }
 }
-
