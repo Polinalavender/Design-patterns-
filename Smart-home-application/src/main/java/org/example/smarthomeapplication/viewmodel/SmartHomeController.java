@@ -10,10 +10,11 @@ public class SmartHomeController {
     private final Map<String, SmartDevice> devices = new HashMap<>();
     private final SmartDeviceFactory factory = new SmartDeviceFactory();
 
-    public void addDevice(String type, String name) {
-        if (devices.containsKey(name)) return;
+    public SmartDevice addDevice(String type, String name) {
+        if (devices.containsKey(name)) return devices.get(name);
         SmartDevice device = factory.createDevice(type, name);
         devices.put(name, device);
+        return device;
     }
 
     public void removeDevice(String name) {
@@ -30,5 +31,6 @@ public class SmartHomeController {
     }
 
     public void clearAllDevices() {
+        devices.clear();
     }
 }

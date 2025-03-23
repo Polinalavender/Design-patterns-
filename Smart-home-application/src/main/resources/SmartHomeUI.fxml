@@ -45,10 +45,10 @@
                         style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-weight: bold;"/>
                 <Button text="ℹ️ Check Status" fx:id="checkStatusButton"
                         style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button fx:id="galleryButton" text="Gallery" />
             </HBox>
         </GridPane>
     </center>
-
     <bottom>
         <TextArea fx:id="statusOutput"
                   editable="false"
