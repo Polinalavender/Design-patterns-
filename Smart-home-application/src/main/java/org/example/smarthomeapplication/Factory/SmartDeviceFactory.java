@@ -8,6 +8,7 @@ public class SmartDeviceFactory {
             case "light" -> new SmartLight(name);
             case "thermostat" -> new SmartThermostat(name);
             case "camera" -> new SmartCamera(name);
+            case "voice assistant" -> new SmartVoiceAssistant(name);
             default -> throw new IllegalArgumentException("Unknown device type: " + type);
         };
     }

@@ -1,5 +1,7 @@
 package org.example.smarthomeapplication.model.device;
 
+import org.example.smarthomeapplication.viewmodel.SmartHomeController;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
@@ -104,6 +106,11 @@ public class SmartThermostat extends SmartDevice {
                 }
             }
         }
+    }
+
+    public void openControlPanel(SmartHomeController controller) {
+        ThermostatControlPanel controlPanel = new ThermostatControlPanel(controller);
+        controlPanel.showThermostatControlPanel(this.getDeviceName());
     }
 
     public void setTargetTemperature(double target) {
