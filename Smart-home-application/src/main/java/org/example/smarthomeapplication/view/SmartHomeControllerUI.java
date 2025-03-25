@@ -365,7 +365,27 @@ public class SmartHomeControllerUI implements Observer {
 
     private void updateDeviceSpecificControls() {
         String deviceName = deviceListBox.getValue();
-        if (deviceName == null) return;
+        if (deviceName == null) {
+            // Disable all light-specific controls when no device is selected
+            if (brightnessSlider != null) {
+                brightnessSlider.setVisible(false);
+                brightnessSlider.setDisable(true);
+            }
+            if (colorSelector != null) {
+                colorSelector.setVisible(false);
+                colorSelector.setDisable(true);
+            }
+            if (applyLightSettingsButton != null) {
+                applyLightSettingsButton.setVisible(false);
+                applyLightSettingsButton.setDisable(true);
+            }
+            if (lightPreviewPane != null) {
+                lightPreviewPane.setVisible(false);
+                lightPreviewPane.setDisable(true);
+            }
+            return;
+        }
+
 
         SmartDevice device = null;
         boolean isThermostatDevice = device instanceof SmartThermostat;
@@ -376,18 +396,25 @@ public class SmartHomeControllerUI implements Observer {
 
         boolean isLightDevice = device instanceof SmartLight;
 
-        // Show/hide light-specific controls
-        if (brightnessSlider != null) brightnessSlider.setVisible(isLightDevice);
-        if (colorSelector != null) colorSelector.setVisible(isLightDevice);
-        if (applyLightSettingsButton != null) applyLightSettingsButton.setVisible(isLightDevice);
-        if (lightPreviewPane != null) lightPreviewPane.setVisible(isLightDevice);
+        // Show/hide and enable/disable light-specific controls
+        if (brightnessSlider != null) {
+            brightnessSlider.setVisible(isLightDevice);
+            brightnessSlider.setDisable(!isLightDevice);
+        }
+        if (colorSelector != null) {
+            colorSelector.setVisible(isLightDevice);
+            colorSelector.setDisable(!isLightDevice);
+        }
+        if (applyLightSettingsButton != null) {
+            applyLightSettingsButton.setVisible(isLightDevice);
+            applyLightSettingsButton.setDisable(!isLightDevice);
+        }
+        if (lightPreviewPane != null) {
+            lightPreviewPane.setVisible(isLightDevice);
+            lightPreviewPane.setDisable(!isLightDevice);
+        }
 
-        // Show/hide camera-specific controls
-        boolean isCameraDevice = device instanceof SmartCamera;
-        if (takePhotoButton != null) takePhotoButton.setVisible(isCameraDevice);
-        if (galleryButton != null) galleryButton.setVisible(isCameraDevice);
-
-        // Update light control values if it's a light
+        // If it's a light device, update the light controls
         if (isLightDevice && device instanceof SmartLight light) {
             if (brightnessSlider != null) brightnessSlider.setValue(light.getBrightness());
             if (colorSelector != null) {
