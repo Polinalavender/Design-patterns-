@@ -5,20 +5,21 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.Region;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.util.Duration;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.scene.paint.Color;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Glow;
+import javafx.application.Platform;
+import javafx.scene.shape.Circle;
 
 import org.example.smarthomeapplication.model.device.*;
 import org.example.smarthomeapplication.viewmodel.SmartHomeController;
@@ -29,28 +30,72 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class SmartHomeControllerUI implements Observer {
-    @FXML private ComboBox<String> deviceTypeBox;
-    @FXML private TextField deviceNameField;
-    @FXML private ComboBox<String> deviceListBox;
-    @FXML private ComboBox<String> deviceStateBox;
-    @FXML private TextArea statusOutput;
+    @FXML
+    private ComboBox<String> deviceTypeBox;
+    @FXML
+    private TextField deviceNameField;
+    @FXML
+    private ComboBox<String> deviceListBox;
+    @FXML
+    private ComboBox<String> deviceStateBox;
+    @FXML
+    private TextArea statusOutput;
 
-    @FXML private Button addDeviceButton;
-    @FXML private Button removeDeviceButton;
-    @FXML private Button changeStateButton;
-    @FXML private Button checkStatusButton;
-    @FXML private Button takePhotoButton;
-    @FXML private Button galleryButton;
+    @FXML
+    private Button addDeviceButton;
+    @FXML
+    private Button removeDeviceButton;
+    @FXML
+    private Button changeStateButton;
+    @FXML
+    private Button checkStatusButton;
+    @FXML
+    private Button takePhotoButton;
+    @FXML
+    private Button galleryButton;
 
-    //UI controls for light
-    @FXML private Slider brightnessSlider;
-    @FXML private ComboBox<String> colorSelector;
-    @FXML private Button applyLightSettingsButton;
-    @FXML private StackPane lightPreviewPane;
+    // Voice Assistant specific fields
+    @FXML
+    private Circle statusIndicator;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private VBox animatedWaveform;
+    @FXML
+    private HBox barContainer;
+    @FXML
+    private StackPane pulseContainer;
+    @FXML
+    private Circle pulseCircle;
+    @FXML
+    private Slider volumeSlider;
+    @FXML
+    private ToggleButton listeningToggle;
+    @FXML
+    private ToggleButton muteToggle;
+    @FXML
+    private Button historyButton;
+    @FXML
+    private TextArea conversationArea;
+    @FXML
+    private TextField commandInput;
+    @FXML
+    private Button sendButton;
+
+    // UI controls for light
+    @FXML
+    private Slider brightnessSlider;
+    @FXML
+    private ComboBox<String> colorSelector;
+    @FXML
+    private Button applyLightSettingsButton;
+    @FXML
+    private StackPane lightPreviewPane;
 
     private Region lightPreviewRegion;
     private ColorAdjust colorEffect = new ColorAdjust();
@@ -59,17 +104,21 @@ public class SmartHomeControllerUI implements Observer {
     private final SmartHomeController controller = new SmartHomeController();
     private final User currentUser = new User("Default User");
     private String lastPhotoTaken = null;
+    private SmartVoiceAssistant currentAssistant;
+    private Timeline waveformAnimation;
+    private Timeline pulseAnimation;
 
     private final Map<String, List<String>> deviceStates = Map.of(
             "Light", List.of("on", "off"),
             "Thermostat", List.of("current temperature", "cooling", "heating"),
             "Camera", List.of("on", "off", "recording", "night mode"),
-            "Voice Assistant", List.of("listening", "passive", "mute")
+            "Voice Assistant", List.of("standby", "ringing", "mute")
     );
 
     private final List<String> lightColors = List.of("white", "red", "blue", "pink", "green", "yellow", "purple", "orange");
 
-    @FXML private Button thermostatControlButton;
+    @FXML
+    private Button thermostatControlButton;
 
     @FXML
     private void initialize() {
@@ -133,6 +182,185 @@ public class SmartHomeControllerUI implements Observer {
 
         // Set listener for device selection to update controls
         deviceListBox.setOnAction(event -> updateDeviceSpecificControls());
+
+        // Initialize voice assistant controls
+        initializeVoiceAssistantControls();
+        setupWaveformBars();
+        setupAnimations();
+    }
+
+    private void initializeVoiceAssistantControls() {
+        // Volume slider action
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (currentAssistant != null) {
+                currentAssistant.changeState("volume:" + newVal.intValue());
+            }
+        });
+
+        // Listening toggle action
+        listeningToggle.setOnAction(event -> {
+            if (currentAssistant != null) {
+                if (listeningToggle.isSelected()) {
+                    currentAssistant.changeState("listening");
+                    muteToggle.setSelected(false);
+                    startAnimations();
+                } else {
+                    currentAssistant.changeState("passive");
+                    stopAnimations();
+                }
+            } else {
+                updateStatus("No voice assistant selected.");
+                listeningToggle.setSelected(false);
+            }
+        });
+
+        // Mute toggle action
+        muteToggle.setOnAction(event -> {
+            if (currentAssistant != null) {
+                if (muteToggle.isSelected()) {
+                    currentAssistant.changeState("mute");
+                    listeningToggle.setSelected(false);
+                    stopAnimations();
+                } else {
+                    currentAssistant.changeState("passive");
+                }
+            } else {
+                updateStatus("No voice assistant selected.");
+                muteToggle.setSelected(false);
+            }
+        });
+
+        // History button action
+        historyButton.setOnAction(event -> {
+            if (currentAssistant != null) {
+                displayCommandHistory();
+            } else {
+                updateStatus("No voice assistant selected.");
+            }
+        });
+
+        // Send button action
+        sendButton.setOnAction(event -> sendCommand());
+        commandInput.setOnAction(event -> sendCommand());
+    }
+
+    private void setupWaveformBars() {
+        barContainer.getChildren().clear();
+
+        for (int i = 0; i < 8; i++) {
+            Region bar = new Pane();
+            bar.setPrefSize(5, 5);
+            bar.setMaxWidth(5);
+            bar.setMinWidth(5);
+            bar.setPrefHeight(5);
+            bar.setStyle("-fx-background-color: #3498db; -fx-background-radius: 2;");
+
+            HBox.setMargin(bar, new javafx.geometry.Insets(0, 2, 0, 2));
+
+            barContainer.getChildren().add(bar);
+        }
+    }
+
+    private void setupAnimations() {
+        waveformAnimation = new Timeline();
+        waveformAnimation.setCycleCount(Timeline.INDEFINITE);
+
+        Random random = new Random();
+
+        KeyFrame waveKeyFrame = new KeyFrame(Duration.millis(500), event -> {
+            for (int i = 0; i < barContainer.getChildren().size(); i++) {
+                Region bar = (Region) barContainer.getChildren().get(i);
+                double newHeight = 5 + random.nextInt(30);
+                bar.setPrefHeight(newHeight);
+            }
+        });
+
+        waveformAnimation.getKeyFrames().add(waveKeyFrame);
+
+        pulseAnimation = new Timeline();
+        pulseAnimation.setCycleCount(Timeline.INDEFINITE);
+
+        KeyFrame pulseGrow = new KeyFrame(
+                Duration.millis(1000),
+                new KeyValue(pulseCircle.radiusProperty(), 30)
+        );
+
+        KeyFrame pulseShrink = new KeyFrame(
+                Duration.millis(2000),
+                new KeyValue(pulseCircle.radiusProperty(), 25)
+        );
+
+        pulseAnimation.getKeyFrames().addAll(pulseGrow, pulseShrink);
+    }
+
+    private void startAnimations() {
+        waveformAnimation.play();
+        pulseAnimation.play();
+    }
+
+    private void stopAnimations() {
+        waveformAnimation.stop();
+        pulseAnimation.stop();
+
+        barContainer.getChildren().forEach(node -> {
+            if (node instanceof Region) {
+                ((Region) node).setPrefHeight(5);
+            }
+        });
+        pulseCircle.setRadius(25);
+    }
+
+    private void sendCommand() {
+        String command = commandInput.getText().trim();
+        if (command.isEmpty()) return;
+
+        if (currentAssistant != null) {
+            currentAssistant.changeState("command:" + command);
+            commandInput.clear();
+
+            Timeline processingAnimation = new Timeline(
+                    new KeyFrame(Duration.ZERO, e -> {
+                        statusIndicator.setFill(Color.web("#3498db")); // Blue for processing
+                        startAnimations();
+                    }),
+                    new KeyFrame(Duration.millis(800), e -> {
+                        if (currentAssistant.getListeningMode().equals("active")) {
+                            statusIndicator.setFill(Color.web("#27ae60")); // Back to green
+                        } else {
+                            statusIndicator.setFill(Color.web("#f39c12")); // Back to orange
+                            stopAnimations();
+                        }
+                    })
+            );
+            processingAnimation.play();
+        } else {
+            updateStatus("No voice assistant selected.");
+        }
+    }
+
+    private void displayCommandHistory() {
+        if (currentAssistant == null) return;
+
+        Map<String, String> history = currentAssistant.getCommandHistory();
+        StringBuilder historyText = new StringBuilder("Command History:\n\n");
+
+        for (Map.Entry<String, String> entry : history.entrySet()) {
+            historyText.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Command History");
+        dialog.setHeaderText("Command history for " + currentAssistant.getDeviceName());
+
+        TextArea textArea = new TextArea(historyText.toString());
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setPrefWidth(400);
+        textArea.setPrefHeight(300);
+
+        dialog.getDialogPane().setContent(textArea);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.showAndWait();
     }
 
     private void updateDeviceSpecificControls() {
@@ -170,8 +398,70 @@ public class SmartHomeControllerUI implements Observer {
             }
             updateLightPreview();
         }
+
+        // Check if the selected device is a voice assistant
+        device = controller.getDevice(deviceListBox.getValue());
+        boolean isVoiceAssistant = device instanceof SmartVoiceAssistant;
+
+        // Show/hide voice assistant-specific controls
+        if (statusIndicator != null) statusIndicator.setVisible(isVoiceAssistant);
+        if (statusLabel != null) statusLabel.setVisible(isVoiceAssistant);
+        if (volumeSlider != null) volumeSlider.setVisible(isVoiceAssistant);
+        if (listeningToggle != null) listeningToggle.setVisible(isVoiceAssistant);
+        if (muteToggle != null) muteToggle.setVisible(isVoiceAssistant);
+        if (historyButton != null) historyButton.setVisible(isVoiceAssistant);
+        if (conversationArea != null) conversationArea.setVisible(isVoiceAssistant);
+        if (commandInput != null) commandInput.setVisible(isVoiceAssistant);
+        if (sendButton != null) sendButton.setVisible(isVoiceAssistant);
+
+        // Update the current assistant and controls
+        if (isVoiceAssistant) {
+            currentAssistant = (SmartVoiceAssistant) device;
+            updateAssistantDisplay();
+        } else {
+            currentAssistant = null;
+            resetAssistantDisplay();
+        }
     }
 
+    private void updateAssistantDisplay() {
+        volumeSlider.setValue(currentAssistant.getVolume());
+
+        switch (currentAssistant.getListeningMode()) {
+            case "active":
+                listeningToggle.setSelected(true);
+                muteToggle.setSelected(false);
+                statusIndicator.setFill(Color.web("#27ae60")); // Green
+                statusLabel.setText("Status: listening");
+                startAnimations();
+                break;
+            case "passive":
+                listeningToggle.setSelected(false);
+                muteToggle.setSelected(false);
+                statusIndicator.setFill(Color.web("#f39c12")); // Orange/Yellow
+                statusLabel.setText("Status: idle");
+                stopAnimations();
+                break;
+            case "muted":
+                listeningToggle.setSelected(false);
+                muteToggle.setSelected(true);
+                statusIndicator.setFill(Color.web("#e74c3c")); // Red
+                statusLabel.setText("Status: muted");
+                stopAnimations();
+                break;
+        }
+
+        conversationArea.setText(currentAssistant.getActiveConversation());
+    }
+
+    private void resetAssistantDisplay() {
+        listeningToggle.setSelected(false);
+        muteToggle.setSelected(false);
+        statusIndicator.setFill(Color.LIGHTGRAY);
+        statusLabel.setText("Status: no device");
+        conversationArea.clear();
+        stopAnimations();
+    }
 
     private void updateLightPreview() {
         if (lightPreviewRegion == null) return;
@@ -225,9 +515,6 @@ public class SmartHomeControllerUI implements Observer {
         // Create a global screen effect to simulate the light's effect on the screen
         // This is simulated here - in a real app this would affect the entire application
 
-        // For a real implementation, you might use JavaFX effects on the main scene
-        // or use platform-specific APIs to adjust the screen brightness and color
-
         if (lightPreviewPane != null && lightPreviewPane.getScene() != null) {
             ColorAdjust colorAdjust = new ColorAdjust();
 
@@ -251,8 +538,7 @@ public class SmartHomeControllerUI implements Observer {
             // Apply brightness
             colorAdjust.setBrightness(brightness - 0.5);
 
-            // Note: This applies to the light preview pane only for demonstration
-            // In a real implementation, this would affect the entire UI
+            // This applies to the light preview pane only for demonstration
             lightPreviewPane.setEffect(colorAdjust);
         }
     }
@@ -321,6 +607,13 @@ public class SmartHomeControllerUI implements Observer {
                 updateDeviceSpecificControls();
             });
         }
+
+        Platform.runLater(() -> {
+            // Update assistant display if the current assistant sent the update
+            if (currentAssistant != null) {
+                updateAssistantDisplay();
+            }
+        });
     }
 
     private void showPhotoNotification() {
@@ -366,11 +659,10 @@ public class SmartHomeControllerUI implements Observer {
         delay.setOnFinished(e -> notificationStage.close());
         delay.play();
 
-        // Show the notification
         notificationStage.show();
     }
 
-        @FXML
+    @FXML
     private void removeDevice() {
         String name = deviceListBox.getValue();
         if (name == null) {
@@ -393,7 +685,6 @@ public class SmartHomeControllerUI implements Observer {
             deviceStateBox.getItems().addAll(deviceStates.get(selectedType));
         }
     }
-
 
     @FXML
     private void addDevice() {
@@ -421,6 +712,12 @@ public class SmartHomeControllerUI implements Observer {
 
         // Update device-specific controls
         updateDeviceSpecificControls();
+
+        device = controller.getDevice(deviceListBox.getValue());
+        if (device instanceof SmartVoiceAssistant) {
+            currentAssistant = (SmartVoiceAssistant) device;
+            updateAssistantDisplay();
+        }
     }
 
     @FXML
