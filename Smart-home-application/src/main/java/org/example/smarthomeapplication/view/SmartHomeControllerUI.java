@@ -189,6 +189,93 @@ public class SmartHomeControllerUI implements Observer {
         setupAnimations();
     }
 
+    private void updateDeviceSpecificControls() {
+        String deviceName = deviceListBox.getValue();
+        if (deviceName == null) {
+            // Disable all light-specific controls when no device is selected
+            if (brightnessSlider != null) {
+                brightnessSlider.setVisible(false);
+                brightnessSlider.setDisable(true);
+            }
+            if (colorSelector != null) {
+                colorSelector.setVisible(false);
+                colorSelector.setDisable(true);
+            }
+            if (applyLightSettingsButton != null) {
+                applyLightSettingsButton.setVisible(false);
+                applyLightSettingsButton.setDisable(true);
+            }
+            if (lightPreviewPane != null) {
+                lightPreviewPane.setVisible(false);
+                lightPreviewPane.setDisable(true);
+            }
+            return;
+        }
+
+        SmartDevice device = null;
+        boolean isThermostatDevice = device instanceof SmartThermostat;
+        if (thermostatControlButton != null) thermostatControlButton.setVisible(isThermostatDevice);
+
+        device = controller.getDevice(deviceName);
+        if (device == null) return;
+
+        boolean isLightDevice = device instanceof SmartLight;
+
+        // Show/hide and enable/disable light-specific controls
+        if (brightnessSlider != null) {
+            brightnessSlider.setVisible(isLightDevice);
+            brightnessSlider.setDisable(!isLightDevice);
+        }
+        if (colorSelector != null) {
+            colorSelector.setVisible(isLightDevice);
+            colorSelector.setDisable(!isLightDevice);
+        }
+        if (applyLightSettingsButton != null) {
+            applyLightSettingsButton.setVisible(isLightDevice);
+            applyLightSettingsButton.setDisable(!isLightDevice);
+        }
+        if (lightPreviewPane != null) {
+            lightPreviewPane.setVisible(isLightDevice);
+            lightPreviewPane.setDisable(!isLightDevice);
+        }
+
+        // If it's a light device, update the light controls
+        if (isLightDevice && device instanceof SmartLight light) {
+            if (brightnessSlider != null) brightnessSlider.setValue(light.getBrightness());
+            if (colorSelector != null) {
+                String currentColor = light.getColor();
+                if (lightColors.contains(currentColor)) {
+                    colorSelector.setValue(currentColor);
+                }
+            }
+            updateLightPreview();
+        }
+
+        // Check if the selected device is a voice assistant
+        device = controller.getDevice(deviceListBox.getValue());
+        boolean isVoiceAssistant = device instanceof SmartVoiceAssistant;
+
+        // Show/hide voice assistant-specific controls
+        if (statusIndicator != null) statusIndicator.setVisible(isVoiceAssistant);
+        if (statusLabel != null) statusLabel.setVisible(isVoiceAssistant);
+        if (volumeSlider != null) volumeSlider.setVisible(isVoiceAssistant);
+        if (listeningToggle != null) listeningToggle.setVisible(isVoiceAssistant);
+        if (muteToggle != null) muteToggle.setVisible(isVoiceAssistant);
+        if (historyButton != null) historyButton.setVisible(isVoiceAssistant);
+        if (conversationArea != null) conversationArea.setVisible(isVoiceAssistant);
+        if (commandInput != null) commandInput.setVisible(isVoiceAssistant);
+        if (sendButton != null) sendButton.setVisible(isVoiceAssistant);
+
+        // Update the current assistant and controls
+        if (isVoiceAssistant) {
+            currentAssistant = (SmartVoiceAssistant) device;
+            updateAssistantDisplay();
+        } else {
+            currentAssistant = null;
+            resetAssistantDisplay();
+        }
+    }
+
     private void initializeVoiceAssistantControls() {
         // Volume slider action
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -362,95 +449,7 @@ public class SmartHomeControllerUI implements Observer {
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
         dialog.showAndWait();
     }
-
-    private void updateDeviceSpecificControls() {
-        String deviceName = deviceListBox.getValue();
-        if (deviceName == null) {
-            // Disable all light-specific controls when no device is selected
-            if (brightnessSlider != null) {
-                brightnessSlider.setVisible(false);
-                brightnessSlider.setDisable(true);
-            }
-            if (colorSelector != null) {
-                colorSelector.setVisible(false);
-                colorSelector.setDisable(true);
-            }
-            if (applyLightSettingsButton != null) {
-                applyLightSettingsButton.setVisible(false);
-                applyLightSettingsButton.setDisable(true);
-            }
-            if (lightPreviewPane != null) {
-                lightPreviewPane.setVisible(false);
-                lightPreviewPane.setDisable(true);
-            }
-            return;
-        }
-
-
-        SmartDevice device = null;
-        boolean isThermostatDevice = device instanceof SmartThermostat;
-        if (thermostatControlButton != null) thermostatControlButton.setVisible(isThermostatDevice);
-
-        device = controller.getDevice(deviceName);
-        if (device == null) return;
-
-        boolean isLightDevice = device instanceof SmartLight;
-
-        // Show/hide and enable/disable light-specific controls
-        if (brightnessSlider != null) {
-            brightnessSlider.setVisible(isLightDevice);
-            brightnessSlider.setDisable(!isLightDevice);
-        }
-        if (colorSelector != null) {
-            colorSelector.setVisible(isLightDevice);
-            colorSelector.setDisable(!isLightDevice);
-        }
-        if (applyLightSettingsButton != null) {
-            applyLightSettingsButton.setVisible(isLightDevice);
-            applyLightSettingsButton.setDisable(!isLightDevice);
-        }
-        if (lightPreviewPane != null) {
-            lightPreviewPane.setVisible(isLightDevice);
-            lightPreviewPane.setDisable(!isLightDevice);
-        }
-
-        // If it's a light device, update the light controls
-        if (isLightDevice && device instanceof SmartLight light) {
-            if (brightnessSlider != null) brightnessSlider.setValue(light.getBrightness());
-            if (colorSelector != null) {
-                String currentColor = light.getColor();
-                if (lightColors.contains(currentColor)) {
-                    colorSelector.setValue(currentColor);
-                }
-            }
-            updateLightPreview();
-        }
-
-        // Check if the selected device is a voice assistant
-        device = controller.getDevice(deviceListBox.getValue());
-        boolean isVoiceAssistant = device instanceof SmartVoiceAssistant;
-
-        // Show/hide voice assistant-specific controls
-        if (statusIndicator != null) statusIndicator.setVisible(isVoiceAssistant);
-        if (statusLabel != null) statusLabel.setVisible(isVoiceAssistant);
-        if (volumeSlider != null) volumeSlider.setVisible(isVoiceAssistant);
-        if (listeningToggle != null) listeningToggle.setVisible(isVoiceAssistant);
-        if (muteToggle != null) muteToggle.setVisible(isVoiceAssistant);
-        if (historyButton != null) historyButton.setVisible(isVoiceAssistant);
-        if (conversationArea != null) conversationArea.setVisible(isVoiceAssistant);
-        if (commandInput != null) commandInput.setVisible(isVoiceAssistant);
-        if (sendButton != null) sendButton.setVisible(isVoiceAssistant);
-
-        // Update the current assistant and controls
-        if (isVoiceAssistant) {
-            currentAssistant = (SmartVoiceAssistant) device;
-            updateAssistantDisplay();
-        } else {
-            currentAssistant = null;
-            resetAssistantDisplay();
-        }
-    }
-
+    
     private void updateAssistantDisplay() {
         volumeSlider.setValue(currentAssistant.getVolume());
 
