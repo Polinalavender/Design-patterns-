@@ -1,4 +1,4 @@
-package com.smarthome.util;
+package org.example.smarthomeapplication.util;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

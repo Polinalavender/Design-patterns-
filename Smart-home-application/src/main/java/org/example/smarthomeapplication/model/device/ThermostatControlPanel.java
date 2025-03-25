@@ -1,6 +1,5 @@
 package org.example.smarthomeapplication.model.device;
 
-import com.smarthome.util.UIHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -20,6 +19,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.smarthomeapplication.util.UIHelper;
 import org.example.smarthomeapplication.viewmodel.SmartHomeController;
 
 import java.text.DecimalFormat;
