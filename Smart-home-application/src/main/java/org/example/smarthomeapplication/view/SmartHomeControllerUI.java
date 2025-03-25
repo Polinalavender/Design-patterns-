@@ -1,6 +1,5 @@
 package org.example.smarthomeapplication.view;
 
-import com.smarthome.util.UIHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -22,6 +21,7 @@ import javafx.application.Platform;
 import javafx.scene.shape.Circle;
 
 import org.example.smarthomeapplication.model.device.*;
+import org.example.smarthomeapplication.util.UIHelper;
 import org.example.smarthomeapplication.viewmodel.SmartHomeController;
 import org.example.smarthomeapplication.user.User;
 import org.example.smarthomeapplication.user.Observer;
@@ -218,6 +218,16 @@ public class SmartHomeControllerUI implements Observer {
 
         device = controller.getDevice(deviceName);
         if (device == null) return;
+
+        boolean isCameraDevice = device instanceof SmartCamera;
+        if (takePhotoButton != null) {
+            takePhotoButton.setVisible(isCameraDevice);
+            takePhotoButton.setDisable(!isCameraDevice);
+        }
+        if (galleryButton != null) {
+            galleryButton.setVisible(isCameraDevice);
+            galleryButton.setDisable(!isCameraDevice);
+        }
 
         boolean isLightDevice = device instanceof SmartLight;
 
