@@ -449,7 +449,7 @@ public class SmartHomeControllerUI implements Observer {
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
         dialog.showAndWait();
     }
-    
+
     private void updateAssistantDisplay() {
         volumeSlider.setValue(currentAssistant.getVolume());
 
