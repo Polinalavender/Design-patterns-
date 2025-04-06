@@ -66,4 +66,4 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 | Developer name         | Email                                                        |
 | ---------------------- | ------------------------------------------------------------ |
 | Polina Zueva           | [polly.zueva@student.nhlstenden.com](mailto:polly.zueva@student.nhlstenden.com) |
-| Ameli Masewge Fernando | <ameli.masewge.fernando@student.nhlstenden.com>              |
+| Ameli Masewge Fernando | ameli.masewge.fernando@student.nhlstenden.com                |
