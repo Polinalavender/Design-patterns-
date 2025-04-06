@@ -46,6 +46,8 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 
 **Class Diagram:**
 
+![class diagram](/Users/polinaive/Desktop/class diagram.png)
+
 
 
 
