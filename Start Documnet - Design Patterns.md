@@ -51,13 +51,13 @@ The camera system follows a MVVM (Model-View-ViewModel) architecture
 
 **MOSCOW analysis:**
 
-| MUST have                                                    | SHOULD have                              | COULD have                                          | WON'T have                             |
-| ------------------------------------------------------------ | ---------------------------------------- | --------------------------------------------------- | -------------------------------------- |
-| Add/remove a user as an observer                             | Clears all devices                       | Retrieve the history of state change                | Support for voice assistants           |
-| Add/remove devices                                           | `SmartDevice` stores a list of observers | Ability to group devices (e.g., "Living Room" group | A mobile interface for remote control. |
-| Change device status                                         | Video door bells                         | Users can filter notifications                      |                                        |
-| Checks if the device is active or disconnected               |                                          |                                                     |                                        |
-| `user.User` class implementing `user.Observer`, receiving notifications |                                          |                                                     |                                        |
+| MUST have                                                    | SHOULD have                              | COULD have                                         | WON'T have                                               |
+| ------------------------------------------------------------ | ---------------------------------------- | -------------------------------------------------- | -------------------------------------------------------- |
+| Displaying real-time updates and logs                        | Clears all devices                       | Retrieve the history of state change               | No mention of cloud sync or access from multiple devices |
+| Add/remove devices                                           | `SmartDevice` stores a list of observers | Save preferences/frequently used devices oper user | No login and roles                                       |
+| Change device statuses and select devices                    | Voice assistant, spoken commands         | Users can filter notifications                     |                                                          |
+| Checks if the device is active or disconnected               |                                          |                                                    |                                                          |
+| `user.User` class implementing `user.Observer`, receiving notifications |                                          |                                                    |                                                          |
 
 
 
