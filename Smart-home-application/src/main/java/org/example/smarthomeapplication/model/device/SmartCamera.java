@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class SmartCamera extends SmartDevice {
